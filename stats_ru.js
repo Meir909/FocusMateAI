@@ -13,7 +13,7 @@ function refreshStats() {
 
     // Streaks
     const streak = calculateStreak(completedTasks);
-    if (streakEl) streakEl.textContent = `${streak} Days`;
+    if (streakEl) streakEl.textContent = `${streak} Дней`;
 
     // Completion Rate
     const rate = tasks.length > 0 ? Math.round((completedTasks.length / tasks.length) * 100) : 0;
@@ -28,7 +28,7 @@ function refreshStats() {
 
     // Productivity Score calculation
     const score = Math.min(100, (rate * 0.6) + (streak * 10));
-    const scoreEl = document.getElementById('stat-efficiency');
+    const scoreEl = document.getElementById('stat-efficiency'); // Reusing focus level for score
     if (scoreEl) {
         scoreEl.innerHTML = `<span>${score}</span><small>/100</small>`;
     }
@@ -65,7 +65,7 @@ function renderMainChart(completedTasks) {
         data: {
             labels: labels,
             datasets: [{
-                label: 'Tasks',
+                label: 'Задачи',
                 data: data,
                 borderColor: '#2563EB',
                 backgroundColor: 'rgba(37, 99, 235, 0.1)',
@@ -90,7 +90,7 @@ function renderDistributionChart(allTasks) {
     distributionChart = new Chart(ctx, {
         type: 'doughnut',
         data: {
-            labels: ['To Do', 'In Progress', 'Done'],
+            labels: ['Сделать', 'В процессе', 'Выполнено'],
             datasets: [{
                 data: [todo, progress, done],
                 backgroundColor: ['#e2e8f0', '#93c5fd', '#2563EB'],
@@ -138,7 +138,7 @@ function renderHeatmap(completedTasks) {
         const day = document.createElement('div');
         day.className = 'cal-day';
         if (count > 0) day.classList.add(`level-${Math.min(4, count)}`);
-        day.title = `${d.toDateString()}: ${count} tasks`;
+        day.title = `${d.toDateString()}: ${count} задач`;
         grid.appendChild(day);
     }
 }
@@ -153,17 +153,17 @@ async function runDeepDiagnostic() {
     const ids = ['insight-procrastination', 'insight-optimization', 'insight-risks'];
     ids.forEach(id => {
         const el = document.getElementById(id).querySelector('p');
-        el.textContent = "AI is auditing your patterns...";
+        el.textContent = "AI анализирует ваши паттерны...";
         el.classList.add('loading');
     });
 
     const context = `
         Behavioral Audit Data:
-        - Total tasks: ${tasks.length}
-        - Completed: ${completed.length}
-        - In Progress: ${inProgress}
-        - Stuck in To Do: ${todo.length}
-        - Efficiency: ${document.getElementById('stat-efficiency').textContent}
+        - Всего задач: ${tasks.length}
+        - Выполнено: ${completed.length}
+        - В процессе: ${inProgress}
+        - Застряло в To Do: ${todo.length}
+        - Эффективность: ${document.getElementById('stat-efficiency').textContent}
     `;
 
     try {
@@ -172,8 +172,8 @@ async function runDeepDiagnostic() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 message: `${context}
-                Identify 3 things, returning them as a JSON object with keys: "scenario" (typical procrastination), "optimization" (habit recommendations), and "risks" (forecasting risky periods).
-                Return ONLY the JSON.`,
+                Определите 3 вещи на русском, вернув их как JSON объект с ключами: "scenario" (типичная прокрастинация), "optimization" (рекомендации по привычкам), и "risks" (прогноз рискованных периодов).
+                Верните ТОЛЬКО JSON.`,
                 mode: 'analytical'
             })
         });
@@ -190,11 +190,11 @@ async function runDeepDiagnostic() {
         document.getElementById('insight-optimization').querySelector('p').textContent = formatInsight(result.optimization || result.recommendations);
         document.getElementById('insight-risks').querySelector('p').textContent = formatInsight(result.risks || result.forecasting);
 
-        createNotification("Audit Complete", "Behavioral diagnostic finalized.", "🧠");
+        createNotification("Аудит завершен", "Поведенческая диагностика завершена.", "🧠");
     } catch (e) {
         console.error(e);
         ids.forEach(id => {
-            document.getElementById(id).querySelector('p').textContent = "Failed to run audit. Check connection.";
+            document.getElementById(id).querySelector('p').textContent = "Не удалось провести аудит. Проверьте соединение.";
         });
     }
 }
@@ -203,7 +203,7 @@ async function analyzeProcrastination() {
     const tasks = JSON.parse(localStorage.getItem('focusmate_tasks')) || [];
     const analysisBox = document.getElementById('ai-pattern-analysis');
 
-    analysisBox.innerHTML = '<p>AI is identifying success patterns... 🧬</p>';
+    analysisBox.innerHTML = '<p>AI определяет паттерны успеха... 🧬</p>';
 
     const done = tasks.filter(t => t.status === 'done').length;
     const total = tasks.length;
@@ -213,14 +213,14 @@ async function analyzeProcrastination() {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                message: `Analyze productivity for ${done}/${total} tasks. Identify success patterns or risk of failure. Keep it to 2 insightful sentences.`,
+                message: `Проанализируйте продуктивность для ${done}/${total} задач. Определите паттерны успеха или риск неудачи на русском. Не более 2 проницательных предложений.`,
                 mode: 'analytical'
             })
         });
         const data = await response.json();
         analysisBox.innerHTML = `<p>${data.response}</p>`;
     } catch (e) {
-        analysisBox.innerHTML = '<p>Failed to get analysis.</p>';
+        analysisBox.innerHTML = '<p>Не удалось получить анализ.</p>';
     }
 }
 
@@ -229,8 +229,8 @@ function updateImprovementLog(rate, streak) {
     if (!list) return;
 
     const improvements = [];
-    if (rate > 50) improvements.push("Stable productivity baseline established.");
-    if (streak > 2) improvements.push("Consistency pattern detected: 3+ day streak.");
+    if (rate > 50) improvements.push("Установлен стабильный базовый уровень продуктивности.");
+    if (streak > 2) improvements.push("Обнаружен паттерн последовательности: серия 3+ дней.");
 
     if (improvements.length === 0) return;
 

@@ -42,7 +42,42 @@ document.addEventListener('DOMContentLoaded', () => {
     const userInput = document.getElementById('user-input');
     const chatMessages = document.getElementById('chat-messages');
 
-    if (chatTrigger) chatTrigger.onclick = () => chatWidget.classList.toggle('hidden');
+    // Enhanced chat trigger functionality
+    if (chatTrigger) {
+        chatTrigger.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            // Toggle chat widget
+            const isHidden = chatWidget.classList.contains('hidden');
+            chatWidget.classList.toggle('hidden');
+            
+            // Focus input when opening
+            if (isHidden && userInput) {
+                setTimeout(() => {
+                    userInput.focus();
+                }, 300);
+            }
+            
+            // Add visual feedback
+            chatTrigger.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                chatTrigger.style.transform = '';
+            }, 150);
+        });
+
+        // Add touch feedback for mobile
+        chatTrigger.addEventListener('touchstart', () => {
+            chatTrigger.style.transform = 'scale(0.95)';
+        });
+
+        chatTrigger.addEventListener('touchend', () => {
+            setTimeout(() => {
+                chatTrigger.style.transform = '';
+            }, 150);
+        });
+    }
+
     if (closeChat) closeChat.onclick = () => chatWidget.classList.add('hidden');
 
     function addMessage(text, isUser = false) {
@@ -67,11 +102,11 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             const data = await response.json();
-            if (data.error) return "Ошибка: " + data.error;
+            if (data.error) return "Error: " + data.error;
             return data.response;
         } catch (error) {
             console.error('Fetch Error:', error);
-            return "Не удалось связаться с сервером. Убедитесь, что backend запущен (node server.js).";
+            return "Failed to connect to server. Make sure backend is running (node server.js).";
         }
     }
 
@@ -103,6 +138,41 @@ document.addEventListener('DOMContentLoaded', () => {
         userInput.onkeypress = (e) => {
             if (e.key === 'Enter') sendBtn.click();
         };
+
+        // Mobile keyboard optimization
+        userInput.addEventListener('focus', () => {
+            // On mobile, adjust chat widget position when keyboard appears
+            if (window.innerWidth <= 768) {
+                setTimeout(() => {
+                    chatWidget.style.bottom = '20px';
+                }, 300);
+            }
+        });
+
+        userInput.addEventListener('blur', () => {
+            // Reset position when keyboard disappears
+            if (window.innerWidth <= 768) {
+                setTimeout(() => {
+                    chatWidget.style.bottom = '';
+                }, 300);
+            }
+        });
+    }
+
+    // Close chat when clicking outside (mobile friendly)
+    document.addEventListener('click', (e) => {
+        if (chatTrigger && chatWidget && !chatWidget.classList.contains('hidden')) {
+            if (!chatWidget.contains(e.target) && !chatTrigger.contains(e.target)) {
+                chatWidget.classList.add('hidden');
+            }
+        }
+    });
+
+    // Prevent chat from closing when clicking inside
+    if (chatWidget) {
+        chatWidget.addEventListener('click', (e) => {
+            e.stopPropagation();
+        });
     }
 });
 

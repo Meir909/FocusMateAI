@@ -161,18 +161,18 @@
         <main id="view-planner" class="chat-main hidden">
             <header class="chat-top-bar">
                 <div class="chat-info">
-                    <h2>Smart Planning Board</h2>
+                    <h2>Умная доска планирования</h2>
                     <div class="planner-view-toggles">
-                        <button class="view-toggle active" onclick="setPlannerView('daily')">Daily Plan</button>
-                        <button class="view-toggle" onclick="setPlannerView('weekly')">Weekly Plan</button>
-                        <button class="view-toggle" onclick="setPlannerView('kanban')">Kanban</button>
+                        <button class="view-toggle active" onclick="setPlannerView('daily')">Дневной план</button>
+                        <button class="view-toggle" onclick="setPlannerView('weekly')">Недельный план</button>
+                        <button class="view-toggle" onclick="setPlannerView('kanban')">Канбан</button>
                     </div>
                 </div>
                 <div class="chat-actions">
-                    <button class="action-btn" onclick="generateAIPlan()">✨ Generate Plan</button>
+                    <button class="action-btn" onclick="generateAIPlan()">✨ Создать план</button>
                     <button class="action-btn secondary" onclick="adaptPlanWithAI()"
-                        title="Adjust plan based on your recent progress">🧠 Adapt Plan</button>
-                    <button class="action-btn" onclick="openTaskModal()">+ Add Task</button>
+                        title="Настроить план на основе вашего прогресса">🧠 Адаптировать план</button>
+                    <button class="action-btn" onclick="openTaskModal()">+ Добавить задачу</button>
                 </div>
             </header>
 
@@ -180,21 +180,21 @@
                 <div class="kanban-board">
                     <div class="kanban-column" id="col-todo" data-status="todo">
                         <div class="column-header">
-                            <h3>To Do</h3>
+                            <h3>Сделать</h3>
                             <span id="count-todo" class="task-count">0</span>
                         </div>
                         <div class="task-list" id="tasks-todo"></div>
                     </div>
                     <div class="kanban-column" id="col-inprogress" data-status="inprogress">
                         <div class="column-header">
-                            <h3>In Progress</h3>
+                            <h3>В процессе</h3>
                             <span id="count-inprogress" class="task-count">0</span>
                         </div>
                         <div class="task-list" id="tasks-inprogress"></div>
                     </div>
                     <div class="kanban-column" id="col-done" data-status="done">
                         <div class="column-header">
-                            <h3>Done</h3>
+                            <h3>Выполнено</h3>
                             <span id="count-done" class="task-count">0</span>
                         </div>
                         <div class="task-list" id="tasks-done"></div>
@@ -207,11 +207,11 @@
         <main id="view-stats" class="chat-main hidden">
             <header class="chat-top-bar">
                 <div class="chat-info">
-                    <h2>Performance Analytics</h2>
-                    <p class="user-tier">Track your focus streaks and work patterns</p>
+                    <h2>Аналитика производительности</h2>
+                    <p class="user-tier">Отслеживайте серии концентрации и рабочие паттерны</p>
                 </div>
                 <div class="chat-actions">
-                    <button class="action-btn outline" onclick="refreshStats()">Refresh Data</button>
+                    <button class="action-btn outline" onclick="refreshStats()">Обновить данные</button>
                 </div>
             </header>
 
@@ -221,22 +221,22 @@
                     <div class="stat-card highlight">
                         <div class="stat-icon-bg">🔥</div>
                         <div class="stat-details">
-                            <h4 id="stat-streak">0 Days</h4>
-                            <p>Current Streak</p>
+                            <h4 id="stat-streak">0 Дней</h4>
+                            <p>Текущая серия</p>
                         </div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-icon-bg">📊</div>
                         <div class="stat-details">
                             <h4 id="stat-percent">0%</h4>
-                            <p>Completion Rate</p>
+                            <p>Процент выполнения</p>
                         </div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-icon-bg">⚡</div>
                         <div class="stat-details">
                             <h4 id="stat-efficiency">0%</h4>
-                            <p>Focus Level</p>
+                            <p>Уровень концентрации</p>
                         </div>
                     </div>
                 </div>
@@ -246,8 +246,8 @@
                     <div class="stats-col">
                         <div class="chart-section">
                             <div class="card-header">
-                                <h3>Weekly Productivity</h3>
-                                <p>Tasks completed per day</p>
+                                <h3>Недельная продуктивность</h3>
+                                <p>Выполненные задачи за день</p>
                             </div>
                             <div class="chart-wrapper">
                                 <canvas id="productivityChart"></canvas>
@@ -256,7 +256,7 @@
 
                         <div class="chart-section mini">
                             <div class="card-header">
-                                <h3>Task Distribution</h3>
+                                <h3>Распределение задач</h3>
                             </div>
                             <div class="chart-wrapper">
                                 <canvas id="distributionChart"></canvas>
@@ -268,7 +268,7 @@
                     <div class="stats-col">
                         <div class="calendar-section">
                             <div class="card-header">
-                                <h3>Progress Heatmap</h3>
+                                <h3>Карта прогресса</h3>
                             </div>
                             <div id="progress-calendar" class="calendar-grid">
                                 <!-- JS will fill this -->
@@ -277,12 +277,12 @@
 
                         <div class="analysis-section">
                             <div class="card info-card">
-                                <h3>Pattern Analysis</h3>
+                                <h3>Анализ паттернов</h3>
                                 <div id="ai-pattern-analysis" class="analysis-content">
-                                    <p>Calculating patterns based on your behavior...</p>
+                                    <p>Расчет паттернов на основе вашего поведения...</p>
                                 </div>
                                 <button class="ai-analyze-btn" onclick="analyzeProcrastination()">
-                                    ✨ AI Success Analysis
+                                    ✨ AI Анализ успеха
                                 </button>
                             </div>
                         </div>
@@ -293,34 +293,34 @@
                 <div class="deep-insights-section">
                     <div class="card insight-card">
                         <div class="card-header">
-                            <h3>🧠 Deep Diagnostic & Forecasting</h3>
-                            <p>AI-driven analysis of your work habits and risk periods</p>
+                            <h3>🧠 Глубокая диагностика и прогнозирование</h3>
+                            <p>AI-анализ ваших рабочих привычек и рискованных периодов</p>
                         </div>
                         <div class="insights-grid">
                             <div class="insight-item" id="insight-procrastination">
-                                <h4>Typical Procrastination Scenarios</h4>
-                                <p class="placeholder">Wait for diagnostic...</p>
+                                <h4> Типичные сценарии прокрастинации</h4>
+                                <p class="placeholder">Ожидание диагностики...</p>
                             </div>
                             <div class="insight-item" id="insight-optimization">
-                                <h4>Optimization Recommendations</h4>
-                                <p class="placeholder">Wait for diagnostic...</p>
+                                <h4>Рекомендации по оптимизации</h4>
+                                <p class="placeholder">Ожидание диагностики...</p>
                             </div>
                             <div class="insight-item warning" id="insight-risks">
-                                <h4>Risk Period Forecasting</h4>
-                                <p class="placeholder">Wait for diagnostic...</p>
+                                <h4>Прогноз рискованных периодов</h4>
+                                <p class="placeholder">Ожидание диагностики...</p>
                             </div>
                         </div>
                         <button class="ai-analyze-btn secondary" onclick="runDeepDiagnostic()">
-                            🔍 Run Full Behavioral Audit
+                            🔍 Запустить полный поведенческий аудит
                         </button>
                     </div>
                 </div>
 
                 <!-- Bottom: Improvement History -->
                 <div class="history-section">
-                    <h3>Evolution & Improvements</h3>
+                    <h3>Эволюция и улучшения</h3>
                     <div id="improvement-history" class="improvement-list">
-                        <div class="history-placeholder">Track your growth over time...</div>
+                        <div class="history-placeholder">Отслеживайте ваш рост со временем...</div>
                     </div>
                 </div>
             </div>
@@ -330,23 +330,23 @@
     <!-- Task Creation Modal -->
     <div id="task-modal" class="modal">
         <div class="modal-content">
-            <h2>Add New Task</h2>
+            <h2>Добавить новую задачу</h2>
             <div class="form-group">
-                <label>Task Title</label>
-                <input type="text" id="new-task-title" placeholder="e.g. Design a landing page">
+                <label>Название задачи</label>
+                <input type="text" id="new-task-title" placeholder="например: Разработать лендинг">
             </div>
             <div class="form-group">
-                <label>Priority</label>
+                <label>Приоритет</label>
                 <select id="new-task-priority">
-                    <option value="medium">Medium</option>
-                    <option value="urgent">🔴 Urgent</option>
-                    <option value="high">🟠 High</option>
-                    <option value="low">🟢 Low</option>
+                    <option value="medium">Средний</option>
+                    <option value="urgent">🔴 Срочный</option>
+                    <option value="high">🟠 Высокий</option>
+                    <option value="low">🟢 Низкий</option>
                 </select>
             </div>
             <div class="modal-actions">
-                <button class="action-btn" onclick="addNewTask()">Add Task</button>
-                <button class="action-btn outline" onclick="closeTaskModal()">Cancel</button>
+                <button class="action-btn" onclick="addNewTask()">Добавить задачу</button>
+                <button class="action-btn outline" onclick="closeTaskModal()">Отмена</button>
             </div>
         </div>
     </div>
@@ -354,27 +354,27 @@
     <!-- Settings Modal -->
     <div id="settings-modal" class="modal">
         <div class="modal-content settings-modal">
-            <h2>Notification Settings</h2>
+            <h2>Настройки уведомлений</h2>
 
             <div class="settings-group">
-                <label>Intensity (Nudge Frequency)</label>
+                <label>Интенсивность (частота напоминаний)</label>
                 <select id="setting-intensity" onchange="updateSettings()">
-                    <option value="low">Low (Every 15 mins)</option>
-                    <option value="medium" selected>Medium (Every 5 mins)</option>
-                    <option value="high">Aggressive (Every 1 min)</option>
+                    <option value="low">Низкая (каждые 15 мин)</option>
+                    <option value="medium" selected>Средняя (каждые 5 мин)</option>
+                    <option value="high">Агрессивная (каждую минуту)</option>
                 </select>
             </div>
 
             <div class="settings-group toggle-group">
                 <div class="toggle-item">
-                    <span>Browser Push Notifications</span>
+                    <span>Push-уведомления браузера</span>
                     <label class="switch">
                         <input type="checkbox" id="setting-push" onchange="togglePush(this.checked)">
                         <span class="slider round"></span>
                     </label>
                 </div>
                 <div class="toggle-item">
-                    <span>Email Reminders (Beta)</span>
+                    <span>Email напоминания (Бета)</span>
                     <label class="switch">
                         <input type="checkbox" id="setting-email" onchange="updateSettings()">
                         <span class="slider round"></span>
@@ -383,21 +383,21 @@
             </div>
 
             <div class="settings-group" id="email-input-group" style="display:none;">
-                <label>Email Address</label>
+                <label>Email адрес</label>
                 <input type="email" id="setting-email-addr" placeholder="your@email.com" onchange="updateSettings()">
             </div>
 
             <div class="settings-group"
                 style="margin-top: 2rem; border-top: 1px solid var(--border-color); padding-top: 1.5rem;">
-                <h3>Archived Chats</h3>
+                <h3>Архивированные чаты</h3>
                 <div id="archived-chats-list" class="archived-list"
                     style="margin-top: 1rem; max-height: 200px; overflow-y: auto;">
-                    <p style="color: var(--text-muted); font-size: 0.9rem;">No archived chats</p>
+                    <p style="color: var(--text-muted); font-size: 0.9rem;">Нет архивированных чатов</p>
                 </div>
             </div>
 
             <div class="modal-actions">
-                <button class="action-btn" onclick="closeSettings()">Save & Close</button>
+                <button class="action-btn" onclick="closeSettings()">Сохранить и закрыть</button>
             </div>
         </div>
     </div>
@@ -406,18 +406,18 @@
     <div id="account-modal" class="modal">
         <div class="modal-content account-modal">
             <div class="modal-header">
-                <h2>Account & Settings</h2>
+                <h2>Аккаунт и настройки</h2>
                 <button class="close-modal" onclick="closeAccountModal()">&times;</button>
             </div>
 
             <!-- Profile Section -->
             <div class="settings-section">
                 <div class="profile-header-flex">
-                    <h3>Profile</h3>
+                    <h3>Профиль</h3>
                     <div class="language-picker">
                         <select id="setting-lang" onchange="updateAccountSettings()">
-                            <option value="en">🇺🇸 English</option>
                             <option value="ru">🇷🇺 Русский</option>
+                            <option value="en">🇺🇸 English</option>
                         </select>
                     </div>
                 </div>
@@ -425,8 +425,8 @@
                     <div class="avatar-large" id="modal-avatar">U</div>
                     <div class="profile-inputs">
                         <div class="form-group">
-                            <label>Display Name</label>
-                            <input type="text" id="input-username" placeholder="Enter your name"
+                            <label>Отображаемое имя</label>
+                            <input type="text" id="input-username" placeholder="Введите ваше имя"
                                 onchange="updateProfile()">
                         </div>
                     </div>
@@ -435,35 +435,35 @@
 
             <!-- New: Achievements Section -->
             <div class="settings-section achievements-preview">
-                <h3>Achievements</h3>
+                <h3>Достижения</h3>
                 <div class="badge-list" id="badge-container">
-                    <div class="badge-item locked" title="Complete 10 tasks">🏆</div>
-                    <div class="badge-item locked" title="3-day streak">🔥</div>
-                    <div class="badge-item locked" title="Early bird">🌅</div>
-                    <div class="badge-item" onclick="alert('Focus Pro unlocked!')" title="Stayed focused">🎯</div>
+                    <div class="badge-item locked" title="Выполнить 10 задач">🏆</div>
+                    <div class="badge-item locked" title="Серия 3 дня">🔥</div>
+                    <div class="badge-item locked" title="Ранняя пташка">🌅</div>
+                    <div class="badge-item" onclick="alert('Focus Pro разблокирован!')" title="Оставаться сосредоточенным">🎯</div>
                 </div>
             </div>
 
             <!-- Settings Grid -->
             <div class="settings-grid">
                 <div class="settings-section">
-                    <h3>App Experience</h3>
+                    <h3>Опыт приложения</h3>
                     <div class="toggle-item">
-                        <span>Sound Effects</span>
+                        <span>Звуковые эффекты</span>
                         <label class="switch">
                             <input type="checkbox" id="setting-sounds" onchange="updateAccountSettings()">
                             <span class="slider round"></span>
                         </label>
                     </div>
                     <div class="toggle-item">
-                        <span>Dark Mode</span>
+                        <span>Темный режим</span>
                         <label class="switch">
                             <input type="checkbox" id="setting-dark-mode" onchange="toggleDarkMode(this.checked)">
                             <span class="slider round"></span>
                         </label>
                     </div>
                     <div class="toggle-item">
-                        <span>Zen Mode (Deep Work)</span>
+                        <span>Zen режим (глубокая работа)</span>
                         <label class="switch">
                             <input type="checkbox" id="setting-zen-mode" onchange="toggleZenMode(this.checked)">
                             <span class="slider round"></span>
@@ -472,26 +472,26 @@
                 </div>
 
                 <div class="settings-section">
-                    <h3>Integrations & Data</h3>
+                    <h3>Интеграции и данные</h3>
                     <div class="action-list">
                         <button class="action-item" onclick="connectCalendar()">
-                            <span class="icon">📅</span> Connect Google Calendar
+                            <span class="icon">📅</span> Подключить Google Календарь
                         </button>
                         <button class="action-item" onclick="exportData()">
-                            <span class="icon">📥</span> Export Tasks (.json)
+                            <span class="icon">📥</span> Экспортировать задачи (.json)
                         </button>
                         <button class="action-item" onclick="openSupport()">
-                            <span class="icon">💬</span> Help & Support
+                            <span class="icon">💬</span> Помощь и поддержка
                         </button>
                         <button class="action-item danger" onclick="clearData()">
-                            <span class="icon">🗑️</span> Reset All Progress
+                            <span class="icon">🗑️</span> Сбросить весь прогресс
                         </button>
                     </div>
                 </div>
             </div>
 
             <div class="modal-footer">
-                <button class="action-btn" onclick="closeAccountModal()">Done</button>
+                <button class="action-btn" onclick="closeAccountModal()">Готово</button>
             </div>
         </div>
     </div>
@@ -523,7 +523,7 @@
                 switchTab('chat');
                 setTimeout(() => {
                     if (typeof addMessage === 'function') {
-                        addMessage("I've analyzed your task! Here is your step-by-step plan:", false);
+                        addMessage("Я проанализировал вашу задачу! Вот ваш пошаговый план:", false);
                         addMessage(breakdown, false);
                     }
                 }, 500);

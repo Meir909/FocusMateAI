@@ -62,12 +62,12 @@ async function togglePush(enabled) {
     if (enabled) {
         const permission = await Notification.requestPermission();
         if (permission !== 'granted') {
-            alert("Please enable notification permissions in your browser settings.");
+            alert("Пожалуйста, включите разрешения на уведомления в настройках браузера.");
             document.getElementById('setting-push').checked = false;
             userSettings.pushEnabled = false;
         } else {
             userSettings.pushEnabled = true;
-            createNotification("Systems Ready", "Browser push notifications enabled!", "🔔");
+            createNotification("Системы готовы", "Push-уведомления браузера включены!", "🔔");
         }
     } else {
         userSettings.pushEnabled = false;
@@ -103,11 +103,11 @@ async function showFocusReminder() {
     const doneCount = tasks.filter(t => t.status === 'done').length;
     const todoCount = tasks.filter(t => t.status === 'todo').length;
 
-    let progressContext = `The user has finished ${doneCount} tasks but still has ${todoCount} tasks left. `;
-    let prompt = `${progressContext} The user is currently idle. Give a short, adaptive nudge based on this progress. `;
+    let progressContext = `Пользователь завершил ${doneCount} задач, но у него осталось ${todoCount} задач. `;
+    let prompt = `${progressContext} Пользователь сейчас бездействует. Дайте короткий, адаптивный толчок на русском на основе этого прогресса. `;
 
     if (todoCount === 0) {
-        prompt = "User is idle but has no tasks left! Suggest taking a break or planning the next big win.";
+        prompt = "Пользователь бездействует, но у него нет задач! Предложите отдохнуть или спланировать следующую большую победу.";
     }
 
     try {
@@ -120,7 +120,7 @@ async function showFocusReminder() {
         const nudge = data.response;
 
         // In-app Notification
-        createNotification("FocusMate Nudge", nudge, mode === 'strict' ? '😤' : '😇');
+        createNotification("FocusMate напоминание", nudge, mode === 'strict' ? '😤' : '😇');
 
         // Browser Push
         if (userSettings.pushEnabled && Notification.permission === 'granted') {
@@ -132,12 +132,12 @@ async function showFocusReminder() {
             fetch('http://localhost:3000/api/email', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email: userSettings.emailAddr, subject: "Focus Reminder", message: nudge })
+                body: JSON.stringify({ email: userSettings.emailAddr, subject: "Напоминание о концентрации", message: nudge })
             }).catch(e => console.log("Email failed (local server only)"));
         }
 
     } catch (e) {
-        createNotification("FocusMate", "Time to get back to your tasks!", "💡");
+        createNotification("FocusMate", "Пора возвращаться к задачам!", "💡");
     }
 }
 

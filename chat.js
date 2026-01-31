@@ -44,7 +44,7 @@ async function getAIResponse(message) {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                message: message,
+                message: message + "\n\nIMPORTANT: Respond in the same language as the user's message. If the user writes in Russian, respond in Russian. If the user writes in English, respond in English. Detect the language automatically.",
                 mode: currentMode,
                 mood: currentUserMood,
                 technique: currentTechnique
@@ -54,7 +54,7 @@ async function getAIResponse(message) {
         const data = await response.json();
         return data.response;
     } catch (e) {
-        return "Извините, у меня возникли трудности с подключением к серверу. Попробуйте позже.";
+        return "Sorry, I'm having trouble connecting to the server. Please try again later.";
     }
 }
 
@@ -536,3 +536,122 @@ document.querySelectorAll('.mode-item, .history-item').forEach(item => {
         }
     });
 });
+
+// Enhanced mobile functionality
+document.addEventListener('DOMContentLoaded', () => {
+    // Handle window resize
+    let resizeTimer;
+    window.addEventListener('resize', () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(() => {
+            if (window.innerWidth > 992 && sidebar) {
+                sidebar.classList.remove('active');
+            }
+        }, 250);
+    });
+
+    // Close sidebar when clicking outside (mobile)
+    document.addEventListener('click', (e) => {
+        if (window.innerWidth <= 992 && sidebar && sidebar.classList.contains('active')) {
+            if (!sidebar.contains(e.target) && !mobileSidebarOpen.contains(e.target)) {
+                sidebar.classList.remove('active');
+            }
+        }
+    });
+
+    // Prevent sidebar from closing when clicking inside
+    if (sidebar) {
+        sidebar.addEventListener('click', (e) => {
+            e.stopPropagation();
+        });
+    }
+
+    // Mobile keyboard optimization
+    const userInput = document.getElementById('user-input');
+    if (userInput) {
+        userInput.addEventListener('focus', () => {
+            if (window.innerWidth <= 768) {
+                document.body.style.height = '100vh';
+                document.body.style.overflow = 'hidden';
+            }
+        });
+
+        userInput.addEventListener('blur', () => {
+            if (window.innerWidth <= 768) {
+                setTimeout(() => {
+                    document.body.style.height = '';
+                    document.body.style.overflow = '';
+                }, 300);
+            }
+        });
+    }
+
+    // Touch feedback for mobile buttons
+    const touchButtons = document.querySelectorAll('.action-btn, .mode-btn, .tech-btn, .mood-btn');
+    touchButtons.forEach(btn => {
+        btn.addEventListener('touchstart', () => {
+            btn.style.transform = 'scale(0.95)';
+        });
+
+        btn.addEventListener('touchend', () => {
+            setTimeout(() => {
+                btn.style.transform = '';
+            }, 150);
+        });
+
+        btn.addEventListener('touchcancel', () => {
+            btn.style.transform = '';
+        });
+    });
+
+    // Improved mobile scrolling
+    const chatMessages = document.getElementById('chat-messages');
+    if (chatMessages) {
+        let isScrolling = false;
+        
+        chatMessages.addEventListener('scroll', () => {
+            if (!isScrolling) {
+                chatMessages.classList.add('scrolling');
+            }
+            
+            clearTimeout(isScrolling);
+            isScrolling = setTimeout(() => {
+                chatMessages.classList.remove('scrolling');
+            }, 150);
+        });
+    }
+
+    // Mobile viewport height fix
+    function setViewportHeight() {
+        const vh = window.innerHeight * 0.01;
+        document.documentElement.style.setProperty('--vh', `${vh}px`);
+    }
+
+    setViewportHeight();
+    window.addEventListener('resize', setViewportHeight);
+    window.addEventListener('orientationchange', () => {
+        setTimeout(setViewportHeight, 100);
+    });
+});
+
+// Add CSS custom property support for mobile
+const style = document.createElement('style');
+style.textContent = `
+    .chat-messages-container {
+        height: calc(100vh - 200px);
+        height: calc(var(--vh, 1vh) * 100 - 200px);
+    }
+    
+    @media (max-width: 768px) {
+        .chat-messages-container {
+            height: calc(var(--vh, 1vh) * 100 - 200px);
+        }
+    }
+    
+    @media (max-width: 480px) {
+        .chat-messages-container {
+            height: calc(var(--vh, 1vh) * 100 - 180px);
+        }
+    }
+`;
+document.head.appendChild(style);

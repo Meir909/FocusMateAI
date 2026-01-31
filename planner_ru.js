@@ -36,21 +36,21 @@ function renderKanbanLayout() {
     boardContainer.innerHTML = `
         <div class="kanban-column" id="col-todo" data-status="todo">
             <div class="column-header">
-                <h3>To Do</h3>
+                <h3>Сделать</h3>
                 <span class="task-count" id="count-todo">0</span>
             </div>
             <div class="task-list" id="tasks-todo"></div>
         </div>
         <div class="kanban-column" id="col-inprogress" data-status="inprogress">
             <div class="column-header">
-                <h3>In Progress</h3>
+                <h3>В процессе</h3>
                 <span class="task-count" id="count-inprogress">0</span>
             </div>
             <div class="task-list" id="tasks-inprogress"></div>
         </div>
         <div class="kanban-column" id="col-done" data-status="done">
             <div class="column-header">
-                <h3>Done</h3>
+                <h3>Выполнено</h3>
                 <span class="task-count" id="count-done">0</span>
             </div>
             <div class="task-list" id="tasks-done"></div>
@@ -75,11 +75,11 @@ function renderWeeklyView() {
     boardContainer.classList.add('weekly-grid');
     boardContainer.style.gridTemplateColumns = 'repeat(7, 1fr)';
 
-    const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    const days = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
     days.forEach((day, index) => {
         const col = document.createElement('div');
         col.className = 'kanban-column weekly-column';
-        col.dataset.status = 'todo';
+        col.dataset.status = 'todo'; // Default status for weekly drops
         col.dataset.dayIndex = index;
         col.innerHTML = `
             <div class="column-header">
@@ -89,6 +89,7 @@ function renderWeeklyView() {
         `;
         boardContainer.appendChild(col);
 
+        // Simple distribution for demo
         const dayTasks = tasks.filter((t, i) => i % 7 === index);
         dayTasks.forEach(task => {
             col.querySelector('.task-list').appendChild(createTaskElement(task));
@@ -97,10 +98,10 @@ function renderWeeklyView() {
 }
 
 async function generateAIPlan() {
-    const goal = prompt("What is your main goal for this period? (e.g. Learn Python in a week)");
+    const goal = prompt("Какова ваша основная цель на этот период? (например: Изучить Python за неделю)");
     if (!goal) return;
 
-    createNotification("FocusMate AI", "Creating your personalized plan...", "🧠");
+    createNotification("FocusMate AI", "Создание вашего персонализированного плана...", "🧠");
 
     try {
         const response = await fetch('http://localhost:3000/api/chat', {
@@ -128,10 +129,10 @@ async function generateAIPlan() {
 
         saveTasks();
         renderBoard();
-        createNotification("Plan Generated", `Added ${newTasks.length} tasks to your board.`, "✅");
+        createNotification("План создан", `Добавлено ${newTasks.length} задач на вашу доску.`, "✅");
     } catch (e) {
         console.error(e);
-        alert("Failed to generate plan. Please ensure the AI returned valid JSON.");
+        alert("Не удалось создать план. Убедитесь, что AI вернул валидный JSON.");
     }
 }
 
@@ -143,18 +144,18 @@ function createTaskElement(task) {
     div.dataset.id = task.id;
 
     const priorityLabels = {
-        'urgent': '🔴 Urgent',
-        'high': '🟠 High',
-        'medium': '🟡 Medium',
-        'low': '🟢 Low'
+        'urgent': '🔴 Срочный',
+        'high': '🟠 Высокий',
+        'medium': '🟡 Средний',
+        'low': '🟢 Низкий'
     };
 
     div.innerHTML = `
         <div class="task-priority-tag">${priorityLabels[priority]}</div>
         <div class="task-title" title="${task.title}">${task.title}</div>
         <div class="task-meta">
-            <span class="task-estimate" data-tooltip="AI-estimated time">⏳ ${task.estimate}</span>
-            <button class="ai-breakdown-btn" onclick="breakdownTask('${task.id}')" data-tooltip="Split into micro-steps">✨ Break Down</button>
+            <span class="task-estimate" data-tooltip="AI-оцененное время">⏳ ${task.estimate}</span>
+            <button class="ai-breakdown-btn" onclick="breakdownTask('${task.id}')" data-tooltip="Разбить на микро-шаги">✨ Разбить</button>
         </div>
     `;
 
@@ -221,7 +222,7 @@ function initDragAndDrop() {
 
                 saveTasks();
                 renderBoard();
-                createNotification("Task Updated", `Moved back to ${status}`, "📌");
+                createNotification("Задача обновлена", `Перемещено в ${status}`, "📌");
             }
         });
     });
@@ -246,7 +247,7 @@ async function addNewTask() {
         title: title,
         status: 'todo',
         priority: priority,
-        estimate: 'Estimating...'
+        estimate: 'Оценка...'
     };
 
     tasks.push(newTask);
@@ -260,7 +261,7 @@ async function addNewTask() {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                message: `Estimate time for task: "${title}". Return ONLY the duration (e.g. "45m", "2h", "15m"). Be realistic.`,
+                message: `Оцените время для задачи: "${title}". Верните ТОЛЬКО продолжительность (например "45m", "2h", "15m"). Будьте реалистами.`,
                 mode: 'analytical'
             })
         });
@@ -269,7 +270,7 @@ async function addNewTask() {
         saveTasks();
         renderBoard();
     } catch (e) {
-        newTask.estimate = '30m';
+        newTask.estimate = '30m'; // Default fallback
         saveTasks();
         renderBoard();
     }
@@ -280,19 +281,20 @@ async function breakdownTask(taskId) {
     const parentTask = tasks.find(t => t.id === taskId);
     if (!parentTask) return;
 
-    createNotification("FocusMate AI", `Splitting "${parentTask.title}" into micro-steps...`, "✨");
+    createNotification("FocusMate AI", `Разбиение "${parentTask.title}" на микро-шаги...`, "✨");
 
     try {
         const response = await fetch('http://localhost:3000/api/chat', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                message: `Task: "${parentTask.title}". Break this down into 3-5 very small, actionable micro-tasks (max 15-30 mins each). Return a simple JSON array of strings: ["step 1", "step 2", ...]. Return ONLY the JSON.`,
+                message: `Task: "${parentTask.title}". Break this down into 3-5 very small, actionable micro-tasks (max 15-30 mins each). Return a simple JSON array of strings: ["step 1", "step 2", ...]. Keep it in Russian. Return ONLY the JSON.`,
                 mode: 'analytical'
             })
         });
 
         const data = await response.json();
+        // Regular expression to find JSON array in response
         const match = data.response.match(/\[.*\]/s);
         if (!match) throw new Error("Could not parse AI response");
 
@@ -309,11 +311,11 @@ async function breakdownTask(taskId) {
 
         saveTasks();
         renderBoard();
-        createNotification("Success", `Created ${steps.length} micro-steps for you.`, "✅");
+        createNotification("Успех", `Создано ${steps.length} микро-шагов для вас.`, "✅");
 
     } catch (e) {
         console.error("Breakdown error:", e);
-        createNotification("AI Error", "Could not break down task. Make sure the server is running.", "❌");
+        createNotification("Ошибка AI", "Не удалось разбить задачу. Убедитесь, что сервер запущен.", "❌");
     }
 }
 
@@ -324,12 +326,13 @@ async function adaptPlanWithAI() {
     const todo = tasks.filter(t => t.status === 'todo');
 
     if (todo.length === 0) {
-        createNotification("Adaptive AI", "To Do list is empty, nothing to adapt.", "😴");
+        createNotification("Адаптивный AI", "Список To Do пуст, адаптировать нечего.", "😴");
         return;
     }
 
-    createNotification("Adaptive AI", "Analyzing your progress to adjust the plan...", "🧠");
+    createNotification("Адаптивный AI", "Анализирую ваш прогресс для корректировки плана...", "🧠");
 
+    // Retrieve "Habit Memory"
     const habits = JSON.parse(localStorage.getItem('focusmate_habits')) || { lastEfficiency: 0, failPatterns: [] };
     const stats = {
         completionRate: tasks.length > 0 ? (completed.length / tasks.length) : 0,
@@ -344,8 +347,8 @@ async function adaptPlanWithAI() {
             body: JSON.stringify({
                 message: `Based on a ${Math.round(stats.completionRate * 100)}% completion rate and memory of habits (${JSON.stringify(habits)}), how should I adjust the current ${stats.todoCount} tasks? 
                 Option 1: Simplify them. Option 2: Reschedule. Option 3: Break down more.
-                Return a JSON: {"logic": "Explanation", "actions": [{"taskTitle": "...", "newTitle": "...", "newEstimate": "..."}]}. 
-                Adjust only 2-3 most critical tasks. Return ONLY JSON.`,
+                Return a JSON: {"logic": "Explanation in Russian", "actions": [{"taskTitle": "...", "newTitle": "...", "newEstimate": "..."}]}. 
+                Adjust only 2-3 most critical tasks. Keep it in Russian. Return ONLY JSON.`,
                 mode: 'analytical'
             })
         });
@@ -354,6 +357,7 @@ async function adaptPlanWithAI() {
         const match = data.response.match(/\{.*\}/s);
         const result = JSON.parse(match[0]);
 
+        // Apply changes to the tasks
         result.actions.forEach(action => {
             const task = tasks.find(t => t.title.includes(action.taskTitle) || action.taskTitle.includes(t.title));
             if (task) {
@@ -365,15 +369,16 @@ async function adaptPlanWithAI() {
         saveTasks();
         renderBoard();
 
+        // Save to Habit Memory for next time
         habits.lastEfficiency = stats.completionRate;
         localStorage.setItem('focusmate_habits', JSON.stringify(habits));
 
-        alert(`AI Plan adapted: ${result.logic}`);
-        createNotification("Success", "Plan successfully adjusted to your pace.", "✅");
+        alert(`AI План адаптирован: ${result.logic}`);
+        createNotification("Успех", "План успешно скорректирован под вашу скорость.", "✅");
 
     } catch (e) {
         console.error("Adaptation error:", e);
-        createNotification("AI Error", "Failed to adapt plan automatically.", "❌");
+        createNotification("Ошибка AI", "Не удалось адаптировать план автоматически.", "❌");
     }
 }
 
