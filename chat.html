@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat with FocusMate AI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="chat.css">
+    <link rel="stylesheet" href="planner.css">
+    <link rel="stylesheet" href="stats.css">
+    <link rel="stylesheet" href="notifications.css">
+    <link rel="stylesheet" href="settings.css">
+    <link rel="stylesheet" href="profile.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">FocusMate<span class="text-primary">AI</span></div>
+                <button id="mobile-sidebar-toggle" class="mobile-toggle">✕</button>
+            </div>
+
+            <div class="sidebar-section">
+                <p class="section-title">NAVIGATION</p>
+                <div class="mode-list">
+                    <button class="mode-item active" id="nav-chat" onclick="switchTab('chat')">
+                        <span class="icon">💬</span> Chat
+                    </button>
+                    <button class="mode-item" id="nav-planner" onclick="switchTab('planner')">
+                        <span class="icon">📅</span> Smart Planner
+                    </button>
+                    <button class="mode-item" id="nav-stats" onclick="switchTab('stats')">
+                        <span class="icon">📈</span> Analytics
+                    </button>
+                </div>
+            </div>
+            <div class="sidebar-section">
+                <p class="section-title">CHATS HISTORY</p>
+                <div class="history-list">
+                    <!-- JS will fill this -->
+                </div>
+            </div>
+
+            <div class="sidebar-footer">
+                <div class="user-profile" onclick="openAccountModal()" style="cursor: pointer; margin-bottom: 0.5rem;">
+                    <div class="avatar" id="sidebar-avatar">U</div>
+                    <div class="user-info">
+                        <p class="user-name" id="sidebar-name">User Name</p>
+                        <p class="user-tier">Pro Member</p>
+                    </div>
+                </div>
+                <button class="mode-item footer-settings" id="nav-settings" onclick="openSettings()"
+                    style="width: 100%;">
+                    <span class="icon">⚙️</span> Настройки
+                </button>
+            </div>
+        </aside>
+
+        <!-- Archive Confirmation Modal -->
+        <div id="archive-modal" class="modal">
+            <div class="modal-content">
+                <h2>Архивировать чат?</h2>
+                <p>Вы уверены, что хотите архивировать этот чат? Он перестанет отображаться в общем списке.</p>
+                <p class="modal-hint" style="margin-top: 1rem; font-size: 0.85rem; color: var(--text-muted);">💡
+                    Архивированные чаты можно найти и восстановить в настройках.</p>
+                <div class="modal-actions" style="margin-top: 1.5rem;">
+                    <button id="confirm-archive-btn" class="action-btn">Архивировать</button>
+                    <button class="action-btn outline" onclick="closeArchiveModal()">Отмена</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Chat Area -->
+        <main id="view-chat" class="chat-main">
+            <header class="chat-top-bar">
+                <div class="chat-info">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <button id="mobile-sidebar-open" class="mobile-toggle-open">☰</button>
+                        <h2 id="current-mentor-title">Friendly Mentor</h2>
+                    </div>
+                    <div class="user-mood-selector header-mood">
+                        <span class="mood-label">Your Mood:</span>
+                        <button class="mood-btn" onclick="setUserMood('tired', '😫')" title="Tired">😫</button>
+                        <button class="mood-btn" onclick="setUserMood('stressed', '😰')" title="Stressed">😰</button>
+                        <button class="mood-btn active" onclick="setUserMood('neutral', '😐')"
+                            title="Neutral">😐</button>
+                        <button class="mood-btn" onclick="setUserMood('focused', '🎯')" title="Focused">🎯</button>
+                        <button class="mood-btn" onclick="setUserMood('energetic', '⚡')" title="Energetic">⚡</button>
+                    </div>
+                </div>
+                <div class="chat-actions">
+                    <button id="btn-new-chat" class="action-btn">New Chat</button>
+                </div>
+            </header>
+
+            <div id="chat-messages" class="chat-messages-container">
+            </div>
+
+            <div class="chat-input-container">
+                <div class="chat-header-modes">
+                    <div class="mode-section">
+                        <span class="section-label">Mentor Persona:</span>
+                        <div class="mode-chips">
+                            <button class="mode-btn active" onclick="setChatMode('friendly')">😇 Friendly</button>
+                            <button class="mode-btn" onclick="setChatMode('strict')">😤 Strict</button>
+                            <button class="mode-btn" onclick="setChatMode('analytical')">🧠 Analytical</button>
+                        </div>
+                    </div>
+                    <div class="mode-section">
+                        <span class="section-label">Active Technique:</span>
+                        <div class="mode-chips" id="technique-chips">
+                            <button class="tech-btn" id="tech-none"
+                                onclick="setActiveTechnique('none')">Standard</button>
+                            <button class="tech-btn" id="tech-pomodoro" onclick="setActiveTechnique('pomodoro')">🍅
+                                Pomodoro</button>
+                            <button class="tech-btn" id="tech-feynman" onclick="setActiveTechnique('feynman')">💡
+                                Feynman</button>
+                            <button class="tech-btn" id="tech-eisenhower" onclick="setActiveTechnique('eisenhower')">🍱
+                                Eisenhower</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="input-wrapper">
+                    <div class="attachment-container">
+                        <button class="attach-btn" id="attach-burger-btn" title="Add attachments">
+                            <span class="burger-icon">☰</span>
+                        </button>
+                        <div class="attach-menu" id="attach-menu">
+                            <button class="menu-item" onclick="document.getElementById('photo-input').click()">
+                                <span class="icon">🖼️</span> Фото (до 3)
+                            </button>
+                            <button class="menu-item" onclick="document.getElementById('file-input').click()">
+                                <span class="icon">📁</span> Файл
+                            </button>
+                        </div>
+                    </div>
+
+                    <input type="file" id="photo-input" accept="image/*" multiple style="display: none;">
+                    <input type="file" id="file-input" style="display: none;">
+
+                    <textarea id="user-input" placeholder="Message FocusMate..." rows="1"></textarea>
+                    <button id="send-btn" class="send-btn">
+                        <svg viewBox="0 0 24 24" width="24" height="24">
+                            <path fill="currentColor" d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path>
+                        </svg>
+                    </button>
+                </div>
+                <div id="attachment-preview" class="attachment-preview"></div>
+                <p class="input-hint">FocusMate AI can make mistakes. Verify important info.</p>
+            </div>
+        </main>
+
+        <!-- Main Planner Area -->
+        <main id="view-planner" class="chat-main hidden">
+            <header class="chat-top-bar">
+                <div class="chat-info">
+                    <h2>Smart Planning Board</h2>
+                    <div class="planner-view-toggles">
+                        <button class="view-toggle active" onclick="setPlannerView('daily')">Daily Plan</button>
+                        <button class="view-toggle" onclick="setPlannerView('weekly')">Weekly Plan</button>
+                        <button class="view-toggle" onclick="setPlannerView('kanban')">Kanban</button>
+                    </div>
+                </div>
+                <div class="chat-actions">
+                    <button class="action-btn" onclick="generateAIPlan()">✨ Generate Plan</button>
+                    <button class="action-btn secondary" onclick="adaptPlanWithAI()"
+                        title="Adjust plan based on your recent progress">🧠 Adapt Plan</button>
+                    <button class="action-btn" onclick="openTaskModal()">+ Add Task</button>
+                </div>
+            </header>
+
+            <div class="planner-container">
+                <div class="kanban-board">
+                    <div class="kanban-column" id="col-todo" data-status="todo">
+                        <div class="column-header">
+                            <h3>To Do</h3>
+                            <span id="count-todo" class="task-count">0</span>
+                        </div>
+                        <div class="task-list" id="tasks-todo"></div>
+                    </div>
+                    <div class="kanban-column" id="col-inprogress" data-status="inprogress">
+                        <div class="column-header">
+                            <h3>In Progress</h3>
+                            <span id="count-inprogress" class="task-count">0</span>
+                        </div>
+                        <div class="task-list" id="tasks-inprogress"></div>
+                    </div>
+                    <div class="kanban-column" id="col-done" data-status="done">
+                        <div class="column-header">
+                            <h3>Done</h3>
+                            <span id="count-done" class="task-count">0</span>
+                        </div>
+                        <div class="task-list" id="tasks-done"></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Main Analytics Area -->
+        <main id="view-stats" class="chat-main hidden">
+            <header class="chat-top-bar">
+                <div class="chat-info">
+                    <h2>Performance Analytics</h2>
+                    <p class="user-tier">Track your focus streaks and work patterns</p>
+                </div>
+                <div class="chat-actions">
+                    <button class="action-btn outline" onclick="refreshStats()">Refresh Data</button>
+                </div>
+            </header>
+
+            <div class="stats-container">
+                <!-- Top Row: Streaks and Key Metrics -->
+                <div class="stats-summary-grid">
+                    <div class="stat-card highlight">
+                        <div class="stat-icon-bg">🔥</div>
+                        <div class="stat-details">
+                            <h4 id="stat-streak">0 Days</h4>
+                            <p>Current Streak</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon-bg">📊</div>
+                        <div class="stat-details">
+                            <h4 id="stat-percent">0%</h4>
+                            <p>Completion Rate</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon-bg">⚡</div>
+                        <div class="stat-details">
+                            <h4 id="stat-efficiency">0%</h4>
+                            <p>Focus Level</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stats-main-grid">
+                    <!-- Left: Charts -->
+                    <div class="stats-col">
+                        <div class="chart-section">
+                            <div class="card-header">
+                                <h3>Weekly Productivity</h3>
+                                <p>Tasks completed per day</p>
+                            </div>
+                            <div class="chart-wrapper">
+                                <canvas id="productivityChart"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="chart-section mini">
+                            <div class="card-header">
+                                <h3>Task Distribution</h3>
+                            </div>
+                            <div class="chart-wrapper">
+                                <canvas id="distributionChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Calendar and Patterns -->
+                    <div class="stats-col">
+                        <div class="calendar-section">
+                            <div class="card-header">
+                                <h3>Progress Heatmap</h3>
+                            </div>
+                            <div id="progress-calendar" class="calendar-grid">
+                                <!-- JS will fill this -->
+                            </div>
+                        </div>
+
+                        <div class="analysis-section">
+                            <div class="card info-card">
+                                <h3>Pattern Analysis</h3>
+                                <div id="ai-pattern-analysis" class="analysis-content">
+                                    <p>Calculating patterns based on your behavior...</p>
+                                </div>
+                                <button class="ai-analyze-btn" onclick="analyzeProcrastination()">
+                                    ✨ AI Success Analysis
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- New: Deep Insights & Forecasting -->
+                <div class="deep-insights-section">
+                    <div class="card insight-card">
+                        <div class="card-header">
+                            <h3>🧠 Deep Diagnostic & Forecasting</h3>
+                            <p>AI-driven analysis of your work habits and risk periods</p>
+                        </div>
+                        <div class="insights-grid">
+                            <div class="insight-item" id="insight-procrastination">
+                                <h4> типичные сценарии прокрастинации</h4>
+                                <p class="placeholder">Wait for diagnostic...</p>
+                            </div>
+                            <div class="insight-item" id="insight-optimization">
+                                <h4>Рекомендации по оптимизации</h4>
+                                <p class="placeholder">Wait for diagnostic...</p>
+                            </div>
+                            <div class="insight-item warning" id="insight-risks">
+                                <h4>Прогноз рискованных периодов</h4>
+                                <p class="placeholder">Wait for diagnostic...</p>
+                            </div>
+                        </div>
+                        <button class="ai-analyze-btn secondary" onclick="runDeepDiagnostic()">
+                            🔍 Run Full Behavioral Audit
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Bottom: Improvement History -->
+                <div class="history-section">
+                    <h3>Evolution & Improvements</h3>
+                    <div id="improvement-history" class="improvement-list">
+                        <div class="history-placeholder">Track your growth over time...</div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Task Creation Modal -->
+    <div id="task-modal" class="modal">
+        <div class="modal-content">
+            <h2>Add New Task</h2>
+            <div class="form-group">
+                <label>Task Title</label>
+                <input type="text" id="new-task-title" placeholder="e.g. Design a landing page">
+            </div>
+            <div class="form-group">
+                <label>Priority</label>
+                <select id="new-task-priority">
+                    <option value="medium">Medium</option>
+                    <option value="urgent">🔴 Urgent</option>
+                    <option value="high">🟠 High</option>
+                    <option value="low">🟢 Low</option>
+                </select>
+            </div>
+            <div class="modal-actions">
+                <button class="action-btn" onclick="addNewTask()">Add Task</button>
+                <button class="action-btn outline" onclick="closeTaskModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="modal">
+        <div class="modal-content settings-modal">
+            <h2>Notification Settings</h2>
+
+            <div class="settings-group">
+                <label>Intensity (Nudge Frequency)</label>
+                <select id="setting-intensity" onchange="updateSettings()">
+                    <option value="low">Low (Every 15 mins)</option>
+                    <option value="medium" selected>Medium (Every 5 mins)</option>
+                    <option value="high">Aggressive (Every 1 min)</option>
+                </select>
+            </div>
+
+            <div class="settings-group toggle-group">
+                <div class="toggle-item">
+                    <span>Browser Push Notifications</span>
+                    <label class="switch">
+                        <input type="checkbox" id="setting-push" onchange="togglePush(this.checked)">
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+                <div class="toggle-item">
+                    <span>Email Reminders (Beta)</span>
+                    <label class="switch">
+                        <input type="checkbox" id="setting-email" onchange="updateSettings()">
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="settings-group" id="email-input-group" style="display:none;">
+                <label>Email Address</label>
+                <input type="email" id="setting-email-addr" placeholder="your@email.com" onchange="updateSettings()">
+            </div>
+
+            <div class="settings-group"
+                style="margin-top: 2rem; border-top: 1px solid var(--border-color); padding-top: 1.5rem;">
+                <h3>Архивированные чаты</h3>
+                <div id="archived-chats-list" class="archived-list"
+                    style="margin-top: 1rem; max-height: 200px; overflow-y: auto;">
+                    <p style="color: var(--text-muted); font-size: 0.9rem;">Нет архивированных чатов</p>
+                </div>
+            </div>
+
+            <div class="modal-actions">
+                <button class="action-btn" onclick="closeSettings()">Save & Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Account & Profile Modal -->
+    <div id="account-modal" class="modal">
+        <div class="modal-content account-modal">
+            <div class="modal-header">
+                <h2>Account & Settings</h2>
+                <button class="close-modal" onclick="closeAccountModal()">&times;</button>
+            </div>
+
+            <!-- Profile Section -->
+            <div class="settings-section">
+                <div class="profile-header-flex">
+                    <h3>Profile</h3>
+                    <div class="language-picker">
+                        <select id="setting-lang" onchange="updateAccountSettings()">
+                            <option value="ru">🇷🇺 Русский</option>
+                            <option value="en">🇺🇸 English</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="profile-edit">
+                    <div class="avatar-large" id="modal-avatar">U</div>
+                    <div class="profile-inputs">
+                        <div class="form-group">
+                            <label>Display Name</label>
+                            <input type="text" id="input-username" placeholder="Enter your name"
+                                onchange="updateProfile()">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- New: Achievements Section -->
+            <div class="settings-section achievements-preview">
+                <h3>Achievements</h3>
+                <div class="badge-list" id="badge-container">
+                    <div class="badge-item locked" title="Complete 10 tasks">🏆</div>
+                    <div class="badge-item locked" title="3-day streak">🔥</div>
+                    <div class="badge-item locked" title="Early bird">🌅</div>
+                    <div class="badge-item" onclick="alert('Focus Pro unlocked!')" title="Stayed focused">🎯</div>
+                </div>
+            </div>
+
+            <!-- Settings Grid -->
+            <div class="settings-grid">
+                <div class="settings-section">
+                    <h3>App Experience</h3>
+                    <div class="toggle-item">
+                        <span>Sound Effects</span>
+                        <label class="switch">
+                            <input type="checkbox" id="setting-sounds" onchange="updateAccountSettings()">
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                    <div class="toggle-item">
+                        <span>Dark Mode</span>
+                        <label class="switch">
+                            <input type="checkbox" id="setting-dark-mode" onchange="toggleDarkMode(this.checked)">
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                    <div class="toggle-item">
+                        <span>Zen Mode (Deep Work)</span>
+                        <label class="switch">
+                            <input type="checkbox" id="setting-zen-mode" onchange="toggleZenMode(this.checked)">
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="settings-section">
+                    <h3>Integrations & Data</h3>
+                    <div class="action-list">
+                        <button class="action-item" onclick="connectCalendar()">
+                            <span class="icon">📅</span> Connect Google Calendar
+                        </button>
+                        <button class="action-item" onclick="exportData()">
+                            <span class="icon">📥</span> Export Tasks (.json)
+                        </button>
+                        <button class="action-item" onclick="openSupport()">
+                            <span class="icon">💬</span> Help & Support
+                        </button>
+                        <button class="action-item danger" onclick="clearData()">
+                            <span class="icon">🗑️</span> Reset All Progress
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="action-btn" onclick="closeAccountModal()">Done</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="chat.js"></script>
+    <script src="planner.js"></script>
+    <script src="stats.js"></script>
+    <script src="notifications.js"></script>
+    <script src="profile.js"></script>
+    <script>
+        function switchTab(tab) {
+            document.getElementById('view-chat').classList.toggle('hidden', tab !== 'chat');
+            document.getElementById('view-planner').classList.toggle('hidden', tab !== 'planner');
+            document.getElementById('view-stats').classList.toggle('hidden', tab !== 'stats');
+
+            document.getElementById('nav-chat').classList.toggle('active', tab === 'chat');
+            document.getElementById('nav-planner').classList.toggle('active', tab === 'planner');
+            document.getElementById('nav-stats').classList.toggle('active', tab === 'stats');
+
+            if (tab === 'stats') {
+                if (typeof refreshStats === 'function') refreshStats();
+            }
+        }
+
+        window.addEventListener('load', () => {
+            const breakdown = sessionStorage.getItem('ai_breakdown_msg');
+            if (breakdown) {
+                sessionStorage.removeItem('ai_breakdown_msg');
+                switchTab('chat');
+                setTimeout(() => {
+                    if (typeof addMessage === 'function') {
+                        addMessage("I've analyzed your task! Here is your step-by-step plan:", false);
+                        addMessage(breakdown, false);
+                    }
+                }, 500);
+            }
+        });
+    </script>
+</body>
+
+</html>
