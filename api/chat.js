@@ -1,5 +1,3 @@
-const axios = require('axios');
-
 module.exports = async (req, res) => {
     // Add CORS headers
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -45,23 +43,32 @@ module.exports = async (req, res) => {
     }
 
     try {
-        const response = await axios.post('https://api.groq.com/openai/v1/chat/completions', {
-            model: 'llama-3.3-70b-versatile',
-            messages: [
-                { role: "system", content: systemInstruction },
-                { role: "user", content: message }
-            ],
-            temperature: 0.7
-        }, {
+        const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+            method: 'POST',
             headers: {
                 'Authorization': `Bearer ${process.env.GROQ_API_KEY}`,
                 'Content-Type': 'application/json'
-            }
+            },
+            body: JSON.stringify({
+                model: 'llama-3.3-70b-versatile',
+                messages: [
+                    { role: "system", content: systemInstruction },
+                    { role: "user", content: message }
+                ],
+                temperature: 0.7
+            })
         });
 
-        res.json({ response: response.data.choices[0].message.content });
+        if (!response.ok) {
+            const errorData = await response.text();
+            console.error('Groq API Error:', errorData);
+            return res.status(500).json({ error: 'Failed to connect to AI', details: errorData });
+        }
+
+        const data = await response.json();
+        res.json({ response: data.choices[0].message.content });
     } catch (error) {
-        console.error('API Error:', error.response ? error.response.data : error.message);
+        console.error('API Error:', error.message);
         res.status(500).json({ error: 'Failed to connect to AI', details: error.message });
     }
 };
