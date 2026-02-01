@@ -13,6 +13,15 @@ module.exports = async (req, res) => {
     }
 
     const { message, mode, mood, technique } = req.body;
+    
+    // Log request details
+    console.log('=== Chat API Request ===');
+    console.log('Message:', message);
+    console.log('Mode:', mode);
+    console.log('Mood:', mood);
+    console.log('Technique:', technique);
+    console.log('GROQ_API_KEY exists:', !!process.env.GROQ_API_KEY);
+    console.log('GROQ_API_KEY length:', process.env.GROQ_API_KEY?.length || 0);
 
     let systemInstruction = `You are FocusMate AI, a productivity mentor. User mood: ${mood || 'neutral'}. IMPORTANT: Respond in the same language as the user's message. If user writes in Russian, respond in Russian. If user writes in English, respond in English. `;
 
@@ -43,6 +52,8 @@ module.exports = async (req, res) => {
     }
 
     try {
+        console.log('Making request to Groq API...');
+        
         const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
             method: 'POST',
             headers: {
@@ -59,16 +70,30 @@ module.exports = async (req, res) => {
             })
         });
 
+        console.log('Groq API Response Status:', response.status);
+        console.log('Groq API Response Headers:', Object.fromEntries(response.headers.entries()));
+
         if (!response.ok) {
             const errorData = await response.text();
-            console.error('Groq API Error:', errorData);
-            return res.status(500).json({ error: 'Failed to connect to AI', details: errorData });
+            console.error('Groq API Error Response:', errorData);
+            return res.status(500).json({ 
+                error: 'Failed to connect to AI', 
+                details: errorData,
+                status: response.status 
+            });
         }
 
         const data = await response.json();
+        console.log('Groq API Success Response:', data);
+        
         res.json({ response: data.choices[0].message.content });
     } catch (error) {
         console.error('API Error:', error.message);
-        res.status(500).json({ error: 'Failed to connect to AI', details: error.message });
+        console.error('Full error:', error);
+        res.status(500).json({ 
+            error: 'Failed to connect to AI', 
+            details: error.message,
+            stack: error.stack 
+        });
     }
 };
