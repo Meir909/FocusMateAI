@@ -103,7 +103,7 @@ async function generateAIPlan() {
     createNotification("FocusMate AI", "Creating your personalized plan...", "🧠");
 
     try {
-        const response = await fetch('http://localhost:3000/api/chat', {
+        const response = await fetch('/api/chat', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -256,7 +256,7 @@ async function addNewTask() {
 
     // Auto-estimate with AI
     try {
-        const response = await fetch('http://localhost:3000/api/chat', {
+        const response = await fetch('/api/chat', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -283,7 +283,7 @@ async function breakdownTask(taskId) {
     createNotification("FocusMate AI", `Splitting "${parentTask.title}" into micro-steps...`, "✨");
 
     try {
-        const response = await fetch('http://localhost:3000/api/chat', {
+        const response = await fetch('/api/chat', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -338,7 +338,7 @@ async function adaptPlanWithAI() {
     };
 
     try {
-        const response = await fetch('http://localhost:3000/api/chat', {
+        const response = await fetch('/api/chat', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({

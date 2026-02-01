@@ -111,7 +111,7 @@ async function showFocusReminder() {
     }
 
     try {
-        const response = await fetch('http://localhost:3000/api/chat', {
+        const response = await fetch('/api/chat', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ message: prompt, mode: mode, mood: mood })
@@ -129,7 +129,7 @@ async function showFocusReminder() {
 
         // Email (Simulation or Server call)
         if (userSettings.emailEnabled && userSettings.emailAddr) {
-            fetch('http://localhost:3000/api/email', {
+            fetch('/api/email', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email: userSettings.emailAddr, subject: "Focus Reminder", message: nudge })
